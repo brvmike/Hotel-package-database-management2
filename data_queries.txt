@@ -1,0 +1,50 @@
+
+----------------------------------------------------------------------
+------------------- Queries by Chinonso Eziefule ---------------------
+----------------------------------------------------------------------
+
+-- Query 1
+SELECT
+    g.guestID,
+    g.userID,
+    s.supplierID,
+    s.name AS supplierName,
+    COUNT(p.packageID) AS totalPackagesReceived,
+    SUM(p.weight) AS totalWeightReceived
+FROM
+    guests g
+JOIN
+    package p ON g.userID = p.guestUserID AND g.guestID = p.guestID
+JOIN
+    supplier s ON p.supplierID = s.supplierID
+GROUP BY
+    g.guestID, g.userID, s.supplierID, s.name
+ORDER BY
+    g.guestID ASC;
+
+
+-- Query 2
+SELECT p.packageid, p.type, p.weight, p.volumetype, p.isfragile, g.guestId, g.userid, r.robotid, r.rmodel, d.deliveryid, d.type, d.status, d.currentlocation, d.arrivaltime, d.estimateddeliverytime, d.deliveredtime, d.guestfeedback, d.guestrating from package p
+JOIN delivery d ON d.packageid = p.packageid
+JOIN guests g ON g.guestid = p.guestid
+JOIN users u ON u.userid = g.userid
+JOIN supplier s On s.supplierid = p.supplierid
+JOIN robots r ON r.robotID = p.robotid
+WHERE d.type = 'Robot' AND d.status = 'Delivered'
+ORDER BY d.estimateddeliverytime asc;
+
+
+-- Query 3
+SELECT u.firstName || ' ' || u.lastName AS guestName, r.buildingID, r.roomNumber,     g.checkinTimestamp, g.checkoutTimestamp, COUNT(p.packageID) AS totalPackagesReceived
+FROM users u
+JOIN guests g ON u.userID = g.userID
+JOIN room r ON g.buildingID = r.buildingID 
+    AND g.roomID = r.roomID
+LEFT JOIN package p ON g.userID = p.guestUserID 
+    AND g.guestID = p.guestID
+WHERE g.checkinTimestamp >= ADD_MONTHS(TRUNC(SYSDATE, 'MONTH'), -1)
+    AND g.checkinTimestamp < TRUNC(SYSDATE, 'MONTH')
+GROUP BY
+    u.userID, u.firstName, u.lastName, r.buildingID,
+    r.roomNumber, g.checkinTimestamp, g.checkoutTimestamp
+HAVING COUNT(p.packageID) > 0;
