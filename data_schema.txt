@@ -1,0 +1,34 @@
+Building(buildingID, buildingName)
+Room(buildingID*, roomID, roomNumber, area, beds, maxOccupancy, floor)
+	Foreign key buildingID REFERENCES Building(buildingID);
+Elevator(buildingID*, elevatorID, weightCapacity, maxRobots, sizeType, totalWeight)
+	Foreign key buildingID REFERENCES Building(buildingID);
+ChargingStation(buildingID*, stationID, powerRating, operationalStatus)
+	Foreign key buildingID REFERENCES Building(buildingID);
+Users(userID, firstName, lastName, email, phone, street, city, state, country, zip,  creationTime, lastLoggedIn, role);
+Guests(userID*, guestID, checkInTimestamp, checkOutTimestamp, buildingID*, roomID*)
+	Foreign key userID REFERENCES User(userID);
+	Foreign key (buildingID, roomID) REFERENCES Room(buildingID, roomID);
+EmergencyContact(userID*, guestID*, contactID, firstName, lastName, email, phone)
+	Foreign key (userID, guestID) REFERENCES Guest(userID, guestID);
+Staffs(userID*, staffID, shift)
+	Foreign key userID REFERENCES User(userID);
+Supplier(supplierID, name, email, phone, street, city, state, country, zip)
+Robot(robotID, r_model, manufacturer, weight, weightCapacity, volumeType, batteryStatus, floorNum, buildingBuildingID*, elevatorBuildingID*, elevatorID*, stationBuildingID*, stationID*)
+Foreign key buildingBuildingID REFERENCES Buildin(buildingID);
+	Foreign key elevatorBuildingID REFERENCES Building(buildingID);
+	Foreign key elevatorID REFERENCES Elevator(elevatorID);
+	Foreign key stationBuildingID REFERENCES Building(buildingID);
+	Foreign key stationID REFERENCES Station(stationID);
+Package(packageID, type, weight, volumeType, isFragile, guestUserID*, guestID*, staffUserID*, staffID*, supplierID*, robotID*)
+	Foreign key (guestUserID, guestID) REFERENCES Guest(userID, guestID);
+	Foreign key (staffUserID, staffID) REFERENCES User(userID, staffID);
+	Foreign key supplierID REFERENCES Supplier(supplierID);
+	Foreign key robotID REFERENCES Robot(robotID);
+Delivery(deliveryID, type, status, currentLocation, arrivalTime, estimatedDeliveryTime, deliveredTime, guestFeedback, guestRating, packageID*)
+	Foreign key packageID REFERENCES Package(packageID);
+Notification(notificationID, creationTime, type, content, status, deliveryID*)
+	Foreign key deliveryID REFERENCES Delivery(deliveryID);
+UserNotifications(userID, notificationID)
+	Foreign key userID REFERENCES User(userID);
+	Foreign key notificationID REFERENCES Notification(notificationID);
